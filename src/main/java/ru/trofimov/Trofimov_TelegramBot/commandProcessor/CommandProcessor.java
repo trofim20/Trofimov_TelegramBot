@@ -1,6 +1,5 @@
 package ru.trofimov.Trofimov_TelegramBot.commandProcessor;
 
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.trofimov.Trofimov_TelegramBot.entity.OrderEntity;
 import ru.trofimov.Trofimov_TelegramBot.service.OrderService;
@@ -13,7 +12,6 @@ public class CommandProcessor {
 
     private final OrderService orderService;
 
-    @Lazy
     public CommandProcessor(OrderService orderService) {
         this.orderService = orderService;
     }

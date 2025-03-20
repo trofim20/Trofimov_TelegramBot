@@ -1,42 +1,22 @@
 package ru.trofimov.Trofimov_TelegramBot.configuration;
 
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 
 import ru.trofimov.Trofimov_TelegramBot.commandProcessor.CommandProcessor;
-import ru.trofimov.Trofimov_TelegramBot.entity.OrderEntity;
 
 import java.util.*;
 
 /**
- * Конфигурация приложения
+ * Конфигурация для работы с консолью
  */
 @Configuration
 public class Config {
-    @Value("${app.name}")
-    private String appName;
+    private final CommandProcessor commandProcessor;
 
-    @Value("${app.version}")
-    private String appVersion;
-
-    @Autowired
-    private CommandProcessor commandProcessor;
-
-    @Bean
-    @Scope("singleton")
-    public Map<Long, OrderEntity> orderContainer() {
-        return new HashMap<>();
-    }
-
-    @PostConstruct
-    public void appInfo() {
-        String info = "Приложение: " + appName + ", Версия: " + appVersion;
-        System.out.println(info);
+    public Config(CommandProcessor commandProcessor) {
+        this.commandProcessor = commandProcessor;
     }
 
     @Bean
