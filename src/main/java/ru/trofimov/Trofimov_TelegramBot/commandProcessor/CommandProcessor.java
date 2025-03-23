@@ -1,8 +1,13 @@
 package ru.trofimov.Trofimov_TelegramBot.commandProcessor;
 
 import org.springframework.stereotype.Component;
+import ru.trofimov.Trofimov_TelegramBot.entity.DishEntity;
 import ru.trofimov.Trofimov_TelegramBot.entity.OrderEntity;
+import ru.trofimov.Trofimov_TelegramBot.entity.PaymentEntity;
+import ru.trofimov.Trofimov_TelegramBot.entity.UserEntity;
 import ru.trofimov.Trofimov_TelegramBot.service.OrderService;
+
+import java.util.List;
 
 /**
  * Компонент для обработки команд, введённых пользователем через консоль
@@ -22,11 +27,14 @@ public class CommandProcessor {
             switch (command[0]) {
                 case "create" -> {
                     Long id = Long.parseLong(command[1]);
-                    Long userId = Long.valueOf(command[2]);
+                    UserEntity user = new UserEntity();
                     String order = command[3];
                     String orderDescription = command[4];
                     String orderStatus = command[5];
-                    orderService.createOrder(id, userId, order, orderDescription, orderStatus);
+                    List<DishEntity> dishes = List.of();
+                    PaymentEntity payment = new PaymentEntity();
+                    orderService.createOrder(id, order, orderDescription, orderStatus,
+                            user, dishes, payment);
                     System.out.println("Заказ создан");
                 }
                 case "find" -> {
