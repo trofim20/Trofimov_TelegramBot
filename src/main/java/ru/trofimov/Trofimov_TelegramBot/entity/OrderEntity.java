@@ -1,32 +1,65 @@
 package ru.trofimov.Trofimov_TelegramBot.entity;
 
+import jakarta.persistence.*;
+
+import java.util.List;
+
 /**
  * Сущность заказов
  */
+@Entity
+@Table(name = "tbl_order")
 public class OrderEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long userId;
+
+    @Column(name = "order_number")
     private String order;
+
+    @Column
     private String orderDescription;
+
+    @Column
     private String orderStatus;
 
-    public OrderEntity(Long id, Long userId, String order,
-                       String orderDescription,
-                       String orderStatus) {
-        this.id = id;
-        this.userId = userId;
+    @ManyToOne
+    private UserEntity user;
+
+    @OneToMany(mappedBy = "order")
+    private List<DishEntity> dishes;
+
+    @OneToOne
+    private PaymentEntity payment;
+
+    public OrderEntity() {
+    }
+
+    public OrderEntity(String order, String orderDescription, String orderStatus,
+                       UserEntity user, List<DishEntity> dishes, PaymentEntity payment) {
         this.order = order;
         this.orderDescription = orderDescription;
         this.orderStatus = orderStatus;
+        this.user = user;
+        this.dishes = dishes;
+        this.payment = payment;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getId() {
+        return id;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getOrder() {
+        return order;
+    }
+
+    public void setOrder(String order) {
+        this.order = order;
     }
 
     public String getOrderDescription() {
@@ -45,20 +78,27 @@ public class OrderEntity {
         this.orderStatus = orderStatus;
     }
 
-    public Long getId() {
-        return id;
+    public UserEntity getUser() {
+        return user;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 
-    @Override
-    public String toString() {
-        return "id заказа=" + id +
-                ", id пользователя=" + userId +
-                ", номер заказа='" + order + '\'' +
-                ", описание заказа='" + orderDescription + '\'' +
-                ", статус заказа='" + orderStatus;
+    public List<DishEntity> getDishes() {
+        return dishes;
+    }
+
+    public void setDishes(List<DishEntity> dishes) {
+        this.dishes = dishes;
+    }
+
+    public PaymentEntity getPayment() {
+        return payment;
+    }
+
+    public void setPayment(PaymentEntity payment) {
+        this.payment = payment;
     }
 }
