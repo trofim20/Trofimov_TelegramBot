@@ -27,19 +27,15 @@ public class DishEntity {
     @ManyToOne
     private RestaurantEntity restaurant;
 
-    @ManyToOne
-    private OrderEntity order;
-
     public DishEntity() {
     }
 
-    public DishEntity(String name, String description, double price, String category, RestaurantEntity restaurantEntity, OrderEntity order) {
+    public DishEntity(String name, String description, double price, String category, RestaurantEntity restaurantEntity) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.category = category;
         this.restaurant = restaurantEntity;
-        this.order = order;
     }
 
     public Long getId() {
@@ -88,13 +84,5 @@ public class DishEntity {
 
     public void setRestaurant(RestaurantEntity restaurantEntity) {
         this.restaurant = restaurantEntity;
-    }
-
-    public OrderEntity getOrder() {
-        return order;
-    }
-
-    public void setOrder(OrderEntity order) {
-        this.order = order;
     }
 }

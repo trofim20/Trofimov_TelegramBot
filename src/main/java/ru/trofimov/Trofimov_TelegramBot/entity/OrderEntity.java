@@ -2,8 +2,6 @@ package ru.trofimov.Trofimov_TelegramBot.entity;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 /**
  * Сущность заказов
  */
@@ -27,23 +25,20 @@ public class OrderEntity {
     @ManyToOne
     private UserEntity user;
 
-    @OneToMany(mappedBy = "order")
-    private List<DishEntity> dishes;
+    @ManyToOne
+    private DishEntity dishes;
 
-    @OneToOne
-    private PaymentEntity payment;
 
     public OrderEntity() {
     }
 
     public OrderEntity(String order, String orderDescription, String orderStatus,
-                       UserEntity user, List<DishEntity> dishes, PaymentEntity payment) {
+                       UserEntity user, DishEntity dishes) {
         this.order = order;
         this.orderDescription = orderDescription;
         this.orderStatus = orderStatus;
         this.user = user;
         this.dishes = dishes;
-        this.payment = payment;
     }
 
     public Long getId() {
@@ -86,19 +81,11 @@ public class OrderEntity {
         this.user = user;
     }
 
-    public List<DishEntity> getDishes() {
+    public DishEntity getDishes() {
         return dishes;
     }
 
-    public void setDishes(List<DishEntity> dishes) {
+    public void setDishes(DishEntity dishes) {
         this.dishes = dishes;
-    }
-
-    public PaymentEntity getPayment() {
-        return payment;
-    }
-
-    public void setPayment(PaymentEntity payment) {
-        this.payment = payment;
     }
 }
