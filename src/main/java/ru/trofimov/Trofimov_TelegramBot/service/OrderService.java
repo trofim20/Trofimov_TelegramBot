@@ -13,7 +13,7 @@ import java.util.List;
 public interface OrderService {
 
     void createOrder(Long id, String order, String orderDescription, String orderStatus,
-                     UserEntity user, List<DishEntity> dishes, PaymentEntity payment);
+                     UserEntity user, DishEntity dishes);
 
     OrderEntity findOrderById(Long id);
 

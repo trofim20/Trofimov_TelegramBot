@@ -28,9 +28,8 @@ public class DishServiceImpl implements DishService {
         this.transactionManager = transactionManager;
     }
 
-
     @Override
-    public void deleteDishById(Long id) {
+    public void deleteDishByRestaurantId(Long id) {
         TransactionStatus status = transactionManager.getTransaction(new
                 DefaultTransactionDefinition());
         try {
@@ -38,7 +37,6 @@ public class DishServiceImpl implements DishService {
             for (DishEntity dish : dishes) {
                 dishRepository.delete(dish);
             }
-            restaurantRepository.findRestaurantById(id);
             transactionManager.commit(status);
         } catch (DataAccessException e) {
             transactionManager.rollback(status);

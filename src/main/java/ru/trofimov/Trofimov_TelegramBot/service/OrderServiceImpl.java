@@ -24,7 +24,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void createOrder(Long id, String order, String orderDescription, String orderStatus,
-                            UserEntity user, List<DishEntity> dishes, PaymentEntity payment) {
+                            UserEntity user, DishEntity dishes) {
         if (id == null || user == null || order == null || orderDescription == null || orderStatus == null) {
             throw new IllegalArgumentException("Все поля заказа должны быть заполнены.");
         }
@@ -33,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("Заказ с ID " + id + " уже существует.");
         }
         OrderEntity createOrder = new OrderEntity(order, orderDescription, orderStatus,
-                user, dishes, payment);
+                user, dishes);
         orderRepository.create(createOrder);
     }
 

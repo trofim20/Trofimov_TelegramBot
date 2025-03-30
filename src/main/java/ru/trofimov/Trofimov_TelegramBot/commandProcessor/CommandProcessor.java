@@ -31,10 +31,9 @@ public class CommandProcessor {
                     String order = command[3];
                     String orderDescription = command[4];
                     String orderStatus = command[5];
-                    List<DishEntity> dishes = List.of();
-                    PaymentEntity payment = new PaymentEntity();
+                    DishEntity dishes = new DishEntity();
                     orderService.createOrder(id, order, orderDescription, orderStatus,
-                            user, dishes, payment);
+                            user, dishes);
                     System.out.println("Заказ создан");
                 }
                 case "find" -> {
