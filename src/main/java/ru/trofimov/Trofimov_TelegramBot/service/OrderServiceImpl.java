@@ -1,9 +1,13 @@
 package ru.trofimov.Trofimov_TelegramBot.service;
 
 import org.springframework.stereotype.Service;
+import ru.trofimov.Trofimov_TelegramBot.entity.DishEntity;
 import ru.trofimov.Trofimov_TelegramBot.entity.OrderEntity;
+import ru.trofimov.Trofimov_TelegramBot.entity.PaymentEntity;
+import ru.trofimov.Trofimov_TelegramBot.entity.UserEntity;
 import ru.trofimov.Trofimov_TelegramBot.repository.OrderRepository;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -19,16 +23,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void createOrder(Long id, Long userId, String order,
-                            String orderDescription, String orderStatus) {
-        if (id == null || userId == null || order == null || orderDescription == null || orderStatus == null) {
+    public void createOrder(Long id, String order, String orderDescription, String orderStatus,
+                            UserEntity user, DishEntity dishes) {
+        if (id == null || user == null || order == null || orderDescription == null || orderStatus == null) {
             throw new IllegalArgumentException("Все поля заказа должны быть заполнены.");
         }
 
         if (orderRepository.read(id) != null) {
             throw new IllegalArgumentException("Заказ с ID " + id + " уже существует.");
         }
-        OrderEntity createOrder = new OrderEntity(id, userId, order, orderDescription, orderStatus);
+        OrderEntity createOrder = new OrderEntity(order, orderDescription, orderStatus,
+                user, dishes);
         orderRepository.create(createOrder);
     }
 
