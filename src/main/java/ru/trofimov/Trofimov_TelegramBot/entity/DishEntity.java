@@ -25,6 +25,7 @@ public class DishEntity {
     private String category;
 
     @ManyToOne
+    @JoinColumn(name = "restaurant_id")
     private RestaurantEntity restaurant;
 
     public DishEntity() {
