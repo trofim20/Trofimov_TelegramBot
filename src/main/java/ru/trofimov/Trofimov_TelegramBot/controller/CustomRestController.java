@@ -30,7 +30,7 @@ public class CustomRestController {
     }
 
     @GetMapping("users/findByName")
-    public List<UserEntity> findUserByName(@RequestParam String name) {
+    public UserEntity findUserByName(@RequestParam String name) {
         return userRepository.findByName(name);
     }
 }
