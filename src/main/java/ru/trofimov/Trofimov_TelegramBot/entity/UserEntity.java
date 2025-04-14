@@ -2,6 +2,8 @@ package ru.trofimov.Trofimov_TelegramBot.entity;
 
 import jakarta.persistence.*;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -21,6 +23,9 @@ public class UserEntity {
     private String name;
 
     @Column
+    private String password;
+
+    @Column
     private String number;
 
     @Column
@@ -28,6 +33,12 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user")
     private List<OrderEntity> orderHistory;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Collection<Role> roles = new HashSet<>();
 
     public UserEntity() {
     }
@@ -37,6 +48,12 @@ public class UserEntity {
         this.name = name;
         this.number = number;
         this.address = address;
+    }
+
+    public UserEntity(String name, String password, Role role) {
+        this.name = name;
+        this.password = password;
+        this.roles.add(role);
     }
 
     public Long getId() {
@@ -85,5 +102,21 @@ public class UserEntity {
 
     public void setOrderHistory(List<OrderEntity> orderHistory) {
         this.orderHistory = orderHistory;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
     }
 }
