@@ -22,6 +22,7 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
     private final DishRepository dishRepository;
+    private final SimpleTaskRunner taskRunner;
 
     public ReportService(ReportRepository reportRepository,
                          UserRepository userRepository,
@@ -29,6 +30,7 @@ public class ReportService {
         this.reportRepository = reportRepository;
         this.userRepository = userRepository;
         this.dishRepository = dishRepository;
+        this.taskRunner = new SimpleTaskRunner();
     }
 
     /**
@@ -76,63 +78,62 @@ public class ReportService {
     /**
      * Генерирует отчет, включая статистику пользователей и список блюд
      */
-    private void generateReport(Long reportId) throws InterruptedException, IOException {
+    private void generateReport(Long reportId) throws IOException {
         ReportEntity reportEntity = reportRepository.findById(reportId).orElseThrow();
-
         long startTime = System.currentTimeMillis();
-        long[] userCountTime = {0};
-        long[] dishesTime = {0};
 
-        Thread userCountThread = new Thread(() -> {
-            long start = System.currentTimeMillis();
-            long count = userRepository.count();
-            userCountTime[0] = System.currentTimeMillis() - start;
-            reportEntity.setContent("Количество пользователей: " + count
-                    + " время выполнения: " + userCountTime[0] + " ms");
+        try {
+            long[] userCountTime = {0};
+            long[] dishesTime = {0};
+
+            CompletableFuture<Long> userCountTask = CompletableFuture.supplyAsync(() -> {
+                long start = System.currentTimeMillis();
+                long count = userRepository.count();
+                userCountTime[0] = System.currentTimeMillis() - start;
+                return count;
+            });
+
+            CompletableFuture<String> dishesTask = CompletableFuture.supplyAsync(() -> {
+                long start = System.currentTimeMillis();
+                Iterable<DishEntity> dishes = dishRepository.findAll();
+                StringBuilder dishList = new StringBuilder();
+                for (DishEntity dishEntity : dishes) {
+                    if (dishList.length() > 0) {
+                        dishList.append(", ");
+                    }
+                    dishList.append(dishEntity.getName());
+                }
+                dishesTime[0] = System.currentTimeMillis() - start;
+                return dishList.toString();
+            });
+
+            CompletableFuture.allOf(userCountTask, dishesTask).join();
+
+            long userCount = userCountTask.get();
+            String dishesList = dishesTask.get();
+
+            String htmlTemplate = new String(Files.readAllBytes(
+                    ResourceUtils.getFile("classpath:templates/report.html").toPath()
+            ));
+
+            long elapsed = System.currentTimeMillis() - startTime;
+
+            String finalContent = htmlTemplate
+                    .replace("${userCount}", String.valueOf(userCount))
+                    .replace("${dishesList}", dishesList)
+                    .replace("${userCountTime}", String.valueOf(userCountTime[0]))
+                    .replace("${dishesTime}", String.valueOf(dishesTime[0]))
+                    .replace("${totalTime}", String.valueOf(elapsed));
+
+            reportEntity.setContent(finalContent);
+            reportEntity.setStatus(ReportStatus.COMPLETED);
             reportRepository.save(reportEntity);
-        });
 
-        Thread dishesThread = new Thread(() -> {
-            long start = System.currentTimeMillis();
-            Iterable<DishEntity> count = dishRepository.findAll();
-            StringBuilder dishList = new StringBuilder();
-            for (DishEntity dishEntity : count) {
-                dishList.append(dishEntity.getName()).append("\n");
-            }
-            dishesTime[0] = System.currentTimeMillis() - start;
+        } catch (Exception e) {
+            reportEntity.setStatus(ReportStatus.ERROR);
+            reportEntity.setContent("Произошла ошибка: " + e.getMessage());
             reportRepository.save(reportEntity);
-        });
-
-        userCountThread.start();
-        dishesThread.start();
-
-        userCountThread.join();
-        dishesThread.join();
-
-        long elapsed = System.currentTimeMillis() - startTime;
-
-        String htmlTemplate = new String(Files.readAllBytes(
-                ResourceUtils.getFile("classpath:templates/report.html").toPath()
-        ));
-
-        StringBuilder dishesListBuilder = new StringBuilder();
-        for (DishEntity dish : dishRepository.findAll()) {
-            if (dishesListBuilder.length() > 0) {
-                dishesListBuilder.append(", ");
-            }
-            dishesListBuilder.append(dish.getName());
+            throw new RuntimeException(e);
         }
-        String dishesList = dishesListBuilder.toString();
-
-        String finalContent = htmlTemplate
-                .replace("${userCount}", String.valueOf(userRepository.count()))
-                .replace("${dishesList}", dishesList)
-                .replace("${userCountTime}", String.valueOf(userCountTime[0]))
-                .replace("${dishesTime}", String.valueOf(dishesTime[0]))
-                .replace("${totalTime}", String.valueOf(elapsed));
-
-        reportEntity.setContent(finalContent);
-        reportEntity.setStatus(ReportStatus.COMPLETED);
-        reportRepository.save(reportEntity);
     }
 }
