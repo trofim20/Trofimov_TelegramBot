@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Отчет системы</title>
+</head>
+<body>
+<div class="container">
+    <h1>Отчет о системе</h1>
+
+    <table>
+        <tr>
+            <th>Параметр</th>
+            <th>Значение</th>
+            <th>Время выполнения (мс)</th>
+        </tr>
+        <tr>
+            <td>Количество пользователей</td>
+            <td>${userCount}</td>
+            <td>${userCountTime}</td>
+        </tr>
+        <tr>
+            <td>Список блюд</td>
+            <td>${dishesList}</td>
+            <td>${dishesTime}</td>
+        </tr>
+        <tr>
+            <td colspan="2">Общее время формирования отчета</td>
+            <td>${totalTime}</td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
